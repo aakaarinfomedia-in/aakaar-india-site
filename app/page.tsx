@@ -22,6 +22,10 @@ export default function Home() {
         </p>
       </div>
 
+      <div>
+          MindMeter launching soon....
+      </div>
+
     </main>
   );
 }
