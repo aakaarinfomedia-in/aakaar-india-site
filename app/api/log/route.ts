@@ -23,3 +23,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const client = await clientPromise;
+    const db = client.db("aakaar");
+
+    const logs = await db
+      .collection("mindmeter_logs")
+      .find({})
+      .sort({ created_at: -1 })
+      .limit(7)
+      .toArray();
+
+    return NextResponse.json({ logs });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
+}

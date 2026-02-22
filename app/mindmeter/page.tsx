@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function MindMeter() {
   const [sleep, setSleep] = useState(7);
@@ -9,7 +9,19 @@ export default function MindMeter() {
 
   const [decisionScore, setDecisionScore] = useState<number | null>(null);
   const [meetingRisk, setMeetingRisk] = useState<number | null>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  
+    useEffect(() => {
+    fetch("/api/log")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.logs) {
+          setHistory(data.logs);
+        }
+      });
+  }, []);
 
+  
   const calculate = async () => {
     // Sleep penalty (performance-focused)
     let sleepPenalty = 0;
@@ -158,11 +170,31 @@ export default function MindMeter() {
 
           </div>
         )}
-
-      </div>
 <div className="text-center text-xs text-gray-500 px-6 pb-8">
   MindMeter is a performance guidance tool and does not provide medical or psychological diagnosis. It is intended for informational purposes only.
-</div>      
+</div>
+
+{history.length > 0 && (
+  <div className="mt-10 space-y-4">
+    <h2 className="text-xl font-semibold text-center">
+      Recent Entries
+    </h2>
+
+    {history.map((item, index) => (
+      <div
+        key={index}
+        className="bg-zinc-800 rounded-xl p-4 text-sm text-gray-300"
+      >
+        <div>Sleep: {item.sleep} hrs</div>
+        <div>Meetings: {item.meetings} hrs</div>
+        <div>Stress: {item.stress}</div>
+        <div>Decision Score: {item.decision_score}%</div>
+      </div>
+    ))}
+  </div>
+)}
+      </div>
+      
     </main>
   );
 }
