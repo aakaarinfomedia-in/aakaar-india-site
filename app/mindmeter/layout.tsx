@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aakaar India",
-  description: "",
+  title: "MindMeter",
+  description: "An Aakaar India Innovation",
 };
 
 export default function RootLayout({
