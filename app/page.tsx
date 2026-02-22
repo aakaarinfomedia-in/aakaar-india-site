@@ -1,150 +1,79 @@
-"use client";
+import Link from "next/link";
 
-import { useState } from "react";
-
-export default function MindMeter() {
-  const [sleep, setSleep] = useState(7);
-  const [meetings, setMeetings] = useState(2);
-  const [stress, setStress] = useState(3);
-
-  const [decisionScore, setDecisionScore] = useState<number | null>(null);
-  const [meetingRisk, setMeetingRisk] = useState<number | null>(null);
-
-  const calculate = () => {
-    // Sleep penalty (performance-focused)
-    let sleepPenalty = 0;
-    if (sleep >= 7) {
-      sleepPenalty = 0;
-    } else if (sleep >= 5) {
-      sleepPenalty = (7 - sleep) * 10;
-    } else {
-      sleepPenalty = (7 - sleep) * 15;
-    }
-
-    // Stress penalty
-    let stressPenalty = (stress - 1) * 12;
-
-    // Meeting penalty
-    let meetingPenalty = meetings * 5;
-
-    let stability =
-      100 - sleepPenalty - stressPenalty - meetingPenalty;
-
-    stability = Math.max(0, Math.min(100, stability));
-
-    // Meeting overload
-    let overload =
-      meetings * 8 - sleep * 3;
-
-    overload = Math.max(0, Math.min(100, overload));
-
-    setDecisionScore(stability);
-    setMeetingRisk(overload);
-  };
-
-  const getDecisionLabel = (score: number) => {
-    if (score > 75) return "High Stability – Strong day for important decisions.";
-    if (score > 50) return "Moderate Stability – Be selective with key decisions.";
-    return "Low Stability – Avoid high-impact decisions today.";
-  };
-
-  const getMeetingLabel = (score: number) => {
-    if (score > 70) return "High Overload Risk – Cognitive fatigue likely.";
-    if (score > 40) return "Moderate Load – Monitor energy levels.";
-    return "Low Overload – Healthy cognitive bandwidth.";
-  };
-
+export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-xl bg-zinc-900 rounded-2xl shadow-lg p-10 space-y-8">
+    <main className="min-h-screen bg-black text-white">
 
-        <div className="text-center">
-          <h1 className="text-4xl font-semibold tracking-tight">
-            MindMeter
-          </h1>
-          <p className="text-gray-400 mt-2">
-            Decision Stability & Cognitive Load Index
-          </p>
-        </div>
+      {/* Hero Section */}
+      <section className="flex flex-col items-center justify-center text-center px-6 py-24">
+        <h1 className="text-5xl font-semibold max-w-3xl leading-tight">
+          Should You Make That Decision Today?
+        </h1>
 
-        <div className="space-y-6">
+        <p className="text-gray-400 mt-6 max-w-2xl text-lg">
+          Aakaar MindMeter measures decision stability and cognitive load 
+          based on sleep, stress, and meeting intensity.
+        </p>
 
-          <div>
-            <label className="text-sm text-gray-400">
-              Sleep Hours: {sleep}
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="10"
-              value={sleep}
-              onChange={(e) => setSleep(Number(e.target.value))}
-              className="w-full mt-2"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-400">
-              Meeting Hours Today: {meetings}
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="12"
-              value={meetings}
-              onChange={(e) => setMeetings(Number(e.target.value))}
-              className="w-full mt-2"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-400">
-              Stress Level (1–5): {stress}
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={stress}
-              onChange={(e) => setStress(Number(e.target.value))}
-              className="w-full mt-2"
-            />
-          </div>
-
-        </div>
-
-        <button
-          onClick={calculate}
-          className="w-full bg-white text-black py-3 rounded-xl font-medium hover:opacity-90 transition"
+        <Link
+          href="/mindmeter"
+          className="mt-10 bg-white text-black px-6 py-3 rounded-xl font-medium hover:opacity-90 transition"
         >
-          Calculate MindMeter
-        </button>
+          Try MindMeter
+        </Link>
+      </section>
 
-        {decisionScore !== null && (
-          <div className="space-y-6 text-center mt-6">
+      {/* Problem Section */}
+      <section className="px-6 py-20 bg-zinc-900 text-center">
+        <h2 className="text-3xl font-semibold">
+          Modern Work Is Mentally Overloaded
+        </h2>
 
-            <div>
-              <div className="text-5xl font-semibold">
-                {decisionScore}%
-              </div>
-              <div className="text-gray-400 mt-2">
-                {getDecisionLabel(decisionScore)}
-              </div>
-            </div>
+        <p className="text-gray-400 mt-6 max-w-2xl mx-auto">
+          Back-to-back meetings. Sleep debt. Constant decisions.
+          Decision quality often declines long before burnout becomes visible.
+        </p>
+      </section>
 
-            <div>
-              <div className="text-3xl font-semibold">
-                Meeting Overload: {meetingRisk}%
-              </div>
-              <div className="text-gray-400 mt-2">
-                {getMeetingLabel(meetingRisk!)}
-              </div>
-            </div>
+      {/* Solution Section */}
+      <section className="px-6 py-20 text-center">
+        <h2 className="text-3xl font-semibold">
+          Measure Your Decision Stability
+        </h2>
 
-          </div>
-        )}
+        <p className="text-gray-400 mt-6 max-w-2xl mx-auto">
+          MindMeter provides a performance-focused index that helps you 
+          understand when cognitive strain may impact important decisions.
+        </p>
+      </section>
 
-      </div>
+      {/* How It Works */}
+      <section className="px-6 py-20 bg-zinc-900 text-center">
+        <h2 className="text-3xl font-semibold">
+          How It Works
+        </h2>
+
+        <div className="mt-10 space-y-6 text-gray-400 max-w-xl mx-auto">
+          <p>1. Enter your sleep hours.</p>
+          <p>2. Log meeting load and stress level.</p>
+          <p>3. Receive a Decision Stability and Meeting Overload score.</p>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="px-6 py-24 text-center">
+        <h2 className="text-3xl font-semibold">
+          Make Better Decisions. Protect Your Mental Performance.
+        </h2>
+
+        <Link
+          href="/mindmeter"
+          className="mt-10 inline-block bg-white text-black px-6 py-3 rounded-xl font-medium hover:opacity-90 transition"
+        >
+          Check Your MindMeter
+        </Link>
+      </section>
+
     </main>
   );
 }
