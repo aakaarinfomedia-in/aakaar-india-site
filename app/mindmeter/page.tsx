@@ -14,7 +14,7 @@ export default function MindMeter() {
 
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
-
+const [emailError, setEmailError] = useState("");
   const fetchHistory = async () => {
     const res = await fetch("/api/log");
     const data = await res.json();
@@ -87,18 +87,27 @@ export default function MindMeter() {
     await fetchHistory();
   };
 
-  const handleEarlyAccess = async () => {
-    if (!email) return;
+const isValidEmail = (email: string) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};  
 
-    await fetch("/api/early-access", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
+const handleEarlyAccess = async () => {
+if (!isValidEmail(email)) {
+  setEmailError("Enter a valid email address.");
+  return;
+}
 
-    setSubmitted(true);
-    setEmail("");
-  };
+setEmailError("");
+
+  await fetch("/api/early-access", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  setSubmitted(true);
+  setEmail("");
+};
 
   const getDecisionAdvisory = (score: number) => {
     if (score > 75)
@@ -272,42 +281,73 @@ export default function MindMeter() {
         </div>
 
         {/* RIGHT PANEL - PRO */}
-        <div className="w-full lg:w-96">
-          <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 space-y-4 sticky top-10">
-            <h2 className="text-xl font-semibold">
-              🔒 Decision Intelligence Pro
-            </h2>
+ <div className="w-full lg:w-96">
+  <div className="bg-zinc-900 rounded-2xl shadow-lg p-6 space-y-4 sticky top-10">
+    <h2 className="text-xl font-semibold">
+      🔒 Decision Intelligence Pro
+    </h2>
 
-            <ul className="text-sm text-gray-300 space-y-2">
-              <li>• 30-Day Stability Trend</li>
-              <li>• Volatility Index</li>
-              <li>• Weekly Executive Summary</li>
-              <li>• Priority Decision Alerts</li>
-            </ul>
+    <ul className="text-sm text-gray-300 space-y-2">
+      <li>• 30-Day Stability Trend</li>
+      <li>• Volatility Index</li>
+      <li>• Weekly Executive Summary</li>
+      <li>• Priority Decision Alerts</li>
+    </ul>
 
-            {!submitted ? (
-              <div className="flex flex-col gap-3 mt-4">
-                <input
-                  type="email"
-                  placeholder="Enter email for early access"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="px-3 py-2 rounded-lg bg-zinc-800 text-white placeholder-gray-400 focus:outline-none"
-                />
-                <button
-                  onClick={handleEarlyAccess}
-                  className="bg-white text-black px-4 py-2 rounded-lg font-medium"
-                >
-                  Join Early Access
-                </button>
-              </div>
-            ) : (
-              <p className="text-green-400 text-sm mt-2">
-                You’re on the early access list.
-              </p>
-            )}
-          </div>
-        </div>
+    {!submitted ? (
+      <div className="flex flex-col gap-3 mt-4">
+
+        <input
+          type="email"
+          placeholder="Enter email for early access"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setEmailError("");
+          }}
+          className="px-3 py-2 rounded-lg bg-zinc-800 text-white placeholder-gray-400 focus:outline-none"
+        />
+
+        {/* Inline Email Error */}
+        {emailError && (
+          <p className="text-red-400 text-sm">
+            {emailError}
+          </p>
+        )}
+
+        <button
+          onClick={async () => {
+            if (!isValidEmail(email)) {
+              setEmailError("Please enter a valid email address.");
+              return;
+            }
+
+            setEmailError("");
+
+            await fetch("/api/early-access", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email }),
+            });
+
+            setSubmitted(true);
+            setEmail("");
+          }}
+          className="bg-white text-black px-4 py-2 rounded-lg font-medium hover:opacity-90 transition"
+        >
+          Join Early Access
+        </button>
+
+      </div>
+    ) : (
+      <p className="text-green-400 text-sm mt-2">
+        You’re on the early access list.
+      </p>
+    )}
+  </div>
+</div>
 
       </div>
     </main>
