@@ -11,6 +11,14 @@ export default function MindMeter() {
   const [meetingRisk, setMeetingRisk] = useState<number | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   
+const averageScore =
+  history.length > 0
+    ? Math.round(
+        history.reduce((sum, item) => sum + item.decision_score, 0) /
+          history.length
+      )
+    : null;
+
     useEffect(() => {
     fetch("/api/log")
       .then((res) => res.json())
@@ -147,29 +155,15 @@ export default function MindMeter() {
           Calculate MindMeter
         </button>
 
-        {decisionScore !== null && (
-          <div className="space-y-6 text-center mt-6">
-
-            <div>
-              <div className="text-5xl font-semibold">
-                {decisionScore}%
-              </div>
-              <div className="text-gray-400 mt-2">
-                {getDecisionLabel(decisionScore)}
-              </div>
-            </div>
-
-            <div>
-              <div className="text-3xl font-semibold">
-                Meeting Overload: {meetingRisk}%
-              </div>
-              <div className="text-gray-400 mt-2">
-                {getMeetingLabel(meetingRisk!)}
-              </div>
-            </div>
-
-          </div>
-        )}
+{decisionScore !== null && averageScore !== null && (
+  <div className="text-sm text-gray-400 mt-3">
+    {decisionScore > averageScore
+      ? `You are performing ${decisionScore - averageScore}% above your recent baseline.`
+      : decisionScore < averageScore
+      ? `You are ${averageScore - decisionScore}% below your recent baseline.`
+      : "You are exactly at your recent baseline."}
+  </div>
+)}
 <div className="text-center text-xs text-gray-500 px-6 pb-8">
   MindMeter is a performance guidance tool and does not provide medical or psychological diagnosis. It is intended for informational purposes only.
 </div>
