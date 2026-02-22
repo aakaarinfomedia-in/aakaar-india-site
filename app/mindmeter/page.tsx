@@ -11,6 +11,8 @@ export default function MindMeter() {
   const [meetingRisk, setMeetingRisk] = useState<number | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [totalChecks, setTotalChecks] = useState<number>(0);
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const fetchHistory = async () => {
     const res = await fetch("/api/log");
@@ -19,6 +21,21 @@ export default function MindMeter() {
     if (data.totalCount !== undefined)
       setTotalChecks(data.totalCount);
   };
+
+  const handleEarlyAccess = async () => {
+  if (!email) return;
+
+  await fetch("/api/early-access", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  setSubmitted(true);
+  setEmail("");
+};
 
   useEffect(() => {
     fetchHistory();
@@ -255,7 +272,40 @@ export default function MindMeter() {
             ))}
           </div>
         )}
+<div className="mt-12 bg-zinc-800 rounded-xl p-6 space-y-4">
+  <h2 className="text-xl font-semibold">
+    🔒 Decision Intelligence Pro
+  </h2>
 
+  <ul className="text-sm text-gray-300 space-y-1">
+    <li>• 30-Day Stability Trend</li>
+    <li>• Volatility Index</li>
+    <li>• Weekly Executive Summary</li>
+    <li>• Priority Decision Alerts</li>
+  </ul>
+
+  {!submitted ? (
+    <div className="flex gap-2 mt-4">
+      <input
+        type="email"
+        placeholder="Enter email for early access"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="flex-1 px-3 py-2 rounded-lg text-black"
+      />
+      <button
+        onClick={handleEarlyAccess}
+        className="bg-white text-black px-4 py-2 rounded-lg"
+      >
+        Join
+      </button>
+    </div>
+  ) : (
+    <p className="text-green-400 text-sm mt-2">
+      You’re on the early access list.
+    </p>
+  )}
+</div>
         <div className="text-center text-xs text-gray-500 pt-6">
           MindMeter is a performance guidance tool and does not provide medical or psychological diagnosis. For informational use only.
         </div>
