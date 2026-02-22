@@ -36,7 +36,11 @@ export async function GET() {
       .limit(7)
       .toArray();
 
-    return NextResponse.json({ logs });
+    const totalCount = await db
+      .collection("mindmeter_logs")
+      .countDocuments();
+
+    return NextResponse.json({ logs, totalCount });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false }, { status: 500 });

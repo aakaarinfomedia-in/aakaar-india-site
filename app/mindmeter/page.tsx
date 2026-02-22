@@ -10,15 +10,18 @@ export default function MindMeter() {
   const [decisionScore, setDecisionScore] = useState<number | null>(null);
   const [meetingRisk, setMeetingRisk] = useState<number | null>(null);
   const [history, setHistory] = useState<any[]>([]);
-
+  const [totalChecks, setTotalChecks] = useState<number>(0);
   // Fetch history
-  const fetchHistory = async () => {
-    const res = await fetch("/api/log");
-    const data = await res.json();
-    if (data.logs) {
-      setHistory(data.logs);
-    }
-  };
+const fetchHistory = async () => {
+  const res = await fetch("/api/log");
+  const data = await res.json();
+  if (data.logs) {
+    setHistory(data.logs);
+  }
+  if (data.totalCount !== undefined) {
+    setTotalChecks(data.totalCount);
+  }
+};
 
   useEffect(() => {
     fetchHistory();
@@ -118,7 +121,7 @@ export default function MindMeter() {
             MindMeter
           </h1>
           <p className="text-gray-400 mt-2">
-            Decision Stability & Cognitive Load Index
+            Measure your decision readiness before it costs you.
           </p>
         </div>
 
@@ -174,7 +177,12 @@ export default function MindMeter() {
         >
           Calculate MindMeter
         </button>
-
+        
+{totalChecks > 0 && (
+  <div className="text-center text-sm text-gray-400 mt-3">
+    {totalChecks} stability checks recorded so far.
+  </div>
+)}
         {decisionScore !== null && (
           <div className="space-y-4 text-center mt-6">
 
