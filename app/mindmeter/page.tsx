@@ -10,7 +10,7 @@ export default function MindMeter() {
   const [decisionScore, setDecisionScore] = useState<number | null>(null);
   const [meetingRisk, setMeetingRisk] = useState<number | null>(null);
 
-  const calculate = () => {
+  const calculate = async () => {
     // Sleep penalty (performance-focused)
     let sleepPenalty = 0;
     if (sleep >= 7) {
@@ -40,6 +40,21 @@ export default function MindMeter() {
 
     setDecisionScore(stability);
     setMeetingRisk(overload);
+
+    await fetch("/api/log", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    sleep,
+    meetings,
+    stress,
+    decisionScore: stability,
+    meetingRisk: overload,
+  }),
+});
+
   };
 
   const getDecisionLabel = (score: number) => {
