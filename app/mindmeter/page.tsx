@@ -11,23 +11,19 @@ export default function MindMeter() {
   const [meetingRisk, setMeetingRisk] = useState<number | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [totalChecks, setTotalChecks] = useState<number>(0);
-  // Fetch history
-const fetchHistory = async () => {
-  const res = await fetch("/api/log");
-  const data = await res.json();
-  if (data.logs) {
-    setHistory(data.logs);
-  }
-  if (data.totalCount !== undefined) {
-    setTotalChecks(data.totalCount);
-  }
-};
+
+  const fetchHistory = async () => {
+    const res = await fetch("/api/log");
+    const data = await res.json();
+    if (data.logs) setHistory(data.logs);
+    if (data.totalCount !== undefined)
+      setTotalChecks(data.totalCount);
+  };
 
   useEffect(() => {
     fetchHistory();
   }, []);
 
-  // Baseline average
   const averageScore =
     history.length > 0
       ? Math.round(
@@ -38,7 +34,6 @@ const fetchHistory = async () => {
         )
       : null;
 
-  // Trend detection (latest first)
   const trend =
     history.length >= 3
       ? history[0].decision_score <
@@ -56,13 +51,9 @@ const fetchHistory = async () => {
 
   const calculate = async () => {
     let sleepPenalty = 0;
-    if (sleep >= 7) {
-      sleepPenalty = 0;
-    } else if (sleep >= 5) {
-      sleepPenalty = (7 - sleep) * 10;
-    } else {
-      sleepPenalty = (7 - sleep) * 15;
-    }
+    if (sleep >= 7) sleepPenalty = 0;
+    else if (sleep >= 5) sleepPenalty = (7 - sleep) * 10;
+    else sleepPenalty = (7 - sleep) * 15;
 
     let stressPenalty = (stress - 1) * 12;
     let meetingPenalty = meetings * 5;
@@ -80,9 +71,7 @@ const fetchHistory = async () => {
 
     await fetch("/api/log", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         sleep,
         meetings,
@@ -92,24 +81,38 @@ const fetchHistory = async () => {
       }),
     });
 
-    // Refresh history after saving
     await fetchHistory();
   };
 
-  const getDecisionLabel = (score: number) => {
+  const getDecisionAdvisory = (score: number) => {
     if (score > 75)
-      return "High Stability – Strong day for important decisions.";
-    if (score > 50)
-      return "Moderate Stability – Be selective with key decisions.";
-    return "Low Stability – Avoid high-impact decisions today.";
-  };
+      return (
+        <>
+          <p>You are operating with strong clarity today.</p>
+          <p>
+            Suitable conditions for important or strategic decisions.
+          </p>
+        </>
+      );
 
-  const getMeetingLabel = (score: number) => {
-    if (score > 70)
-      return "High Overload Risk – Cognitive fatigue likely.";
-    if (score > 40)
-      return "Moderate Load – Monitor energy levels.";
-    return "Low Overload – Healthy cognitive bandwidth.";
+    if (score > 50)
+      return (
+        <>
+          <p>Your decision capacity is stable but not optimal.</p>
+          <p>
+            Prioritise structured or lower-risk decisions where possible.
+          </p>
+        </>
+      );
+
+    return (
+      <>
+        <p>Your decision readiness appears reduced today.</p>
+        <p>
+          Consider postponing high-impact commitments if feasible.
+        </p>
+      </>
+    );
   };
 
   return (
@@ -121,7 +124,7 @@ const fetchHistory = async () => {
             MindMeter
           </h1>
           <p className="text-gray-400 mt-2">
-            Measure your decision readiness before it costs you.
+            Understand your decision readiness based on sleep, load, and stress.
           </p>
         </div>
 
@@ -143,7 +146,7 @@ const fetchHistory = async () => {
 
           <div>
             <label className="text-sm text-gray-400">
-              Meeting Hours Today: {meetings}
+              Meeting Hours: {meetings}
             </label>
             <input
               type="range"
@@ -175,14 +178,15 @@ const fetchHistory = async () => {
           onClick={calculate}
           className="w-full bg-white text-black py-3 rounded-xl font-medium hover:opacity-90 transition"
         >
-          Calculate MindMeter
+          Evaluate Decision Readiness
         </button>
-        
-{totalChecks > 0 && (
-  <div className="text-center text-sm text-gray-400 mt-3">
-    {totalChecks} stability checks recorded so far.
-  </div>
-)}
+
+        {totalChecks > 0 && (
+          <div className="text-center text-sm text-gray-400 mt-3">
+            {totalChecks} decision readiness evaluations recorded so far.
+          </div>
+        )}
+
         {decisionScore !== null && (
           <div className="space-y-4 text-center mt-6">
 
@@ -190,40 +194,43 @@ const fetchHistory = async () => {
               {decisionScore}%
             </div>
 
-            <div className="text-gray-400">
-              {getDecisionLabel(decisionScore)}
+            <div className="text-gray-300 text-sm space-y-1">
+              {getDecisionAdvisory(decisionScore)}
             </div>
 
             {averageScore !== null && (
               <div className="text-sm text-gray-400 mt-2">
+                Compared to your recent baseline:{" "}
                 {decisionScore > averageScore
-                  ? `You are performing ${decisionScore - averageScore}% above your recent baseline.`
+                  ? `${decisionScore - averageScore}% higher`
                   : decisionScore < averageScore
-                  ? `You are ${averageScore - decisionScore}% below your recent baseline.`
-                  : "You are exactly at your recent baseline."}
+                  ? `${averageScore - decisionScore}% lower`
+                  : "aligned with baseline"}
               </div>
             )}
 
-{trend === "downward" && (
-  <div className="text-yellow-400 text-sm mt-2">
-    Recent pattern suggests increasing cognitive strain.
-    Consider protecting decision quality today.
-  </div>
-)}
+            {trend === "downward" && (
+              <div className="text-yellow-400 text-sm mt-2">
+                Recent entries suggest decreasing clarity. Monitoring workload and recovery may help stabilise performance.
+              </div>
+            )}
 
-{trend === "upward" && (
-  <div className="text-green-400 text-sm mt-2">
-    Recent pattern suggests strengthening decision stability.
-    Strong conditions for focused work.
-  </div>
-)}
+            {trend === "upward" && (
+              <div className="text-green-400 text-sm mt-2">
+                Recent entries indicate improving stability. Positive momentum building.
+              </div>
+            )}
 
-            <div className="mt-4 text-lg font-semibold">
-              Meeting Overload: {meetingRisk}%
+            <div className="mt-6 text-lg font-semibold">
+              Cognitive Load Indicator: {meetingRisk}%
             </div>
 
-            <div className="text-gray-400">
-              {getMeetingLabel(meetingRisk!)}
+            <div className="text-sm text-gray-400">
+              Reflects estimated mental bandwidth consumption from meetings and recovery balance.
+            </div>
+
+            <div className="mt-4 text-xs text-gray-500">
+              Many professionals use this before important meetings or decisions.
             </div>
 
           </div>
@@ -232,7 +239,7 @@ const fetchHistory = async () => {
         {history.length > 0 && (
           <div className="mt-10 space-y-4">
             <h2 className="text-xl font-semibold text-center">
-              Recent Entries
+              Recent Decision Logs
             </h2>
 
             {history.map((item, index) => (
@@ -243,14 +250,14 @@ const fetchHistory = async () => {
                 <div>Sleep: {item.sleep} hrs</div>
                 <div>Meetings: {item.meetings} hrs</div>
                 <div>Stress: {item.stress}</div>
-                <div>Decision Score: {item.decision_score}%</div>
+                <div>Decision Readiness: {item.decision_score}%</div>
               </div>
             ))}
           </div>
         )}
 
-        <div className="text-center text-xs text-gray-500 px-6 pb-2">
-          MindMeter is a performance guidance tool and does not provide medical or psychological diagnosis. It is intended for informational purposes only.
+        <div className="text-center text-xs text-gray-500 pt-6">
+          MindMeter is a performance guidance tool and does not provide medical or psychological diagnosis. For informational use only.
         </div>
 
       </div>

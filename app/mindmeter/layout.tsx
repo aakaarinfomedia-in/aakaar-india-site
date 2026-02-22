@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "MindMeter",
-  description: "An Aakaar India Innovation",
+  description: "Executive Decision Readiness Index",
 };
 
 export default function RootLayout({
