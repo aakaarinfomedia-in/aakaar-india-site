@@ -196,17 +196,19 @@ export default function MindMeter() {
               </div>
             )}
 
-            {trend === "downward" && (
-              <div className="text-red-400 text-sm mt-2">
-                ⚠ 3-day downward stability trend detected.
-              </div>
-            )}
+{trend === "downward" && (
+  <div className="text-yellow-400 text-sm mt-2">
+    Recent pattern suggests increasing cognitive strain.
+    Consider protecting decision quality today.
+  </div>
+)}
 
-            {trend === "upward" && (
-              <div className="text-green-400 text-sm mt-2">
-                ↑ Positive stability trend detected.
-              </div>
-            )}
+{trend === "upward" && (
+  <div className="text-green-400 text-sm mt-2">
+    Recent pattern suggests strengthening decision stability.
+    Strong conditions for focused work.
+  </div>
+)}
 
             <div className="mt-4 text-lg font-semibold">
               Meeting Overload: {meetingRisk}%
