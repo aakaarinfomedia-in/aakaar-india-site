@@ -177,8 +177,6 @@ const trend =
       : decisionScore < averageScore
       ? `You are ${averageScore - decisionScore}% below your recent baseline.`
       : "You are exactly at your recent baseline."}
-  </div>
-)}
 
 {trend === "downward" && (
   <div className="text-red-400 text-sm mt-2">
@@ -191,6 +189,11 @@ const trend =
     ↑ Positive stability trend detected.
   </div>
 )}
+
+  </div>
+)}
+
+
 
 <div className="text-center text-xs text-gray-500 px-6 pb-8">
   MindMeter is a performance guidance tool and does not provide medical or psychological diagnosis. It is intended for informational purposes only.
