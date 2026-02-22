@@ -19,6 +19,21 @@ const averageScore =
       )
     : null;
 
+const trend =
+  history.length >= 3 &&
+  history[0].decision_score <
+    history[1].decision_score &&
+  history[1].decision_score <
+    history[2].decision_score
+    ? "downward"
+    : history.length >= 3 &&
+      history[0].decision_score >
+        history[1].decision_score &&
+      history[1].decision_score >
+        history[2].decision_score
+    ? "upward"
+    : null;
+
     useEffect(() => {
     fetch("/api/log")
       .then((res) => res.json())
@@ -164,6 +179,19 @@ const averageScore =
       : "You are exactly at your recent baseline."}
   </div>
 )}
+
+{trend === "downward" && (
+  <div className="text-red-400 text-sm mt-2">
+    ⚠ 3-day downward stability trend detected.
+  </div>
+)}
+
+{trend === "upward" && (
+  <div className="text-green-400 text-sm mt-2">
+    ↑ Positive stability trend detected.
+  </div>
+)}
+
 <div className="text-center text-xs text-gray-500 px-6 pb-8">
   MindMeter is a performance guidance tool and does not provide medical or psychological diagnosis. It is intended for informational purposes only.
 </div>
