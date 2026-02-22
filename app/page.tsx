@@ -73,7 +73,9 @@ export default function Home() {
           Check Your MindMeter
         </Link>
       </section>
-
+<div className="text-center text-xs text-gray-500 px-6 pb-8">
+  MindMeter is a performance guidance tool and does not provide medical or psychological diagnosis. It is intended for informational purposes only.
+</div>
     </main>
   );
 }
